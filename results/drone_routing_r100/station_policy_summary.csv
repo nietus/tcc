@@ -1,0 +1,3 @@
+station_policy,runs,objective_mean,distance_mean,tardiness_mean,routes_mean,recharges_mean,infeasible_legs_mean
+all,80,239516.0279058047,321.0648408146934,136.37130649899788,3.3125,0.9,0.2375
+phased,80,277005.2253499672,319.88280562509874,135.28425443421006,3.325,0.825,0.275
