@@ -1,4 +1,3 @@
-
 \documentclass[12pt]{article}
 
 \usepackage{sbc-template}
@@ -40,11 +39,11 @@
 \maketitle
 
 \begin{abstract}
-This paper studies a multi-period extension of the E-VRPTW problem for drone delivery with phased recharging infrastructure. Demand and external charging stations are introduced gradually, and routes are evaluated by distance, tardiness and energy-infeasibility penalties. The proposed MP-EAVNS is an energy-aware Variable Neighborhood Search that combines local search, energy repair and warm starts from previous periods. In 9{,}936 runs over 92 instances, MP-EAVNS reaches 100\,\% viable solutions under full station availability and 98.6\,\% under phased availability. Under full availability, it produces viable routes 6.7\,\% shorter than an adapted ALNS and 9.6\,\% shorter than GRASP; under phased availability, its viable-route distance is only 1.4\,\% above full deployment. The results suggest that gradual infrastructure can preserve most of the routing benefit of complete deployment.
+This paper studies a multi-period extension of the E-VRPTW problem for drone delivery under phased availability of recharging stations. Demand and external charging stations are activated gradually, and routes are evaluated by distance, tardiness and energy-infeasibility penalties. The proposed MP-EAVNS is an energy-aware Variable Neighborhood Search that combines local search, energy repair and warm starts from previous periods. In 9{,}936 runs over 92 instances, MP-EAVNS reaches 100\,\% viable solutions under full station availability and 98.6\,\% under phased availability. Under full availability, it produces viable routes 6.7\,\% shorter than an adapted ALNS and 9.6\,\% shorter than GRASP; under phased availability, its viable-route distance is only 1.4\,\% above full availability. The results suggest that gradual station activation can preserve most of the routing benefit of full availability.
 \end{abstract}
 
 \begin{resumo}
-Este artigo estuda uma extensão multi-período do problema E-VRPTW para entregas por drones com implantação gradual de estações de recarga. A demanda e as estações externas são introduzidas progressivamente, e as rotas são avaliadas por distância, atraso e penalidades de inviabilidade energética. A MP-EAVNS proposta é uma Busca em Vizinhança Variável sensível à energia que combina busca local, reparo energético e inicialização herdada entre períodos. Em 9.936 execuções sobre 92 instâncias, a MP-EAVNS atinge 100\,\% de soluções viáveis sob disponibilidade completa de estações e 98,6\,\% sob disponibilidade faseada. Na política completa, produz rotas viáveis 6,7\,\% mais curtas que uma ALNS adaptada e 9,6\,\% mais curtas que o GRASP; na política faseada, sua distância viável fica apenas 1,4\,\% acima da implantação completa. Os resultados indicam que infraestrutura gradual pode preservar boa parte do benefício da implantação total.
+Este artigo estuda uma extensão multi-período do problema E-VRPTW para entregas por drones com disponibilização gradual de estações de recarga. A demanda e as estações externas tornam-se disponíveis progressivamente, e as rotas são avaliadas por distância, atraso e penalidades de inviabilidade energética. A MP-EAVNS proposta é uma Busca em Vizinhança Variável sensível à energia que combina busca local, reparo energético e inicialização herdada entre períodos. Em 9.936 execuções sobre 92 instâncias, a MP-EAVNS atinge 100\,\% de soluções viáveis sob disponibilidade completa de estações e 98,6\,\% sob disponibilidade faseada. Na política completa, produz rotas viáveis 6,7\,\% mais curtas que uma ALNS adaptada e 9,6\,\% mais curtas que o GRASP; na política faseada, sua distância viável fica apenas 1,4\,\% acima da disponibilidade completa. Os resultados indicam que a disponibilização gradual da infraestrutura pode preservar boa parte do benefício da disponibilidade total.
 \end{resumo}
 
 \section{Introdução} \label{sec:introducao}
@@ -55,15 +54,15 @@ A eletrificação da frota acrescenta uma restrição adicional: a rota só é o
 
 Em drones de entrega, essa dependência é ainda mais forte. A autonomia é menor, a capacidade de carga é reduzida e a margem energética tende a ser mais apertada do que em veículos terrestres. Revisões sobre sistemas de entrega por drones destacam autonomia, recarga e pontos de apoio como fatores centrais de planejamento \cite{raivi2023drone}. Trabalhos recentes já estudam veículos aéreos não tripulados (\textit{Unmanned Aerial Vehicles}, UAVs) com janelas de tempo e recarga via ALNS \cite{shi2023uav}, formulações multiobjetivo para roteamento verde de UAVs \cite{coelho2017green}, localização-roteamento com estações em aplicações industriais \cite{ribeiro2020uav} e roteamento de drones com localização de estações em armazéns \cite{vichitkunakorn2024stocktaking}.
 
-Apesar desses avanços, a maior parte da literatura considera um único horizonte de decisão e assume que a infraestrutura de recarga está fixa e disponível desde o início. Essa hipótese é forte para operações em implantação: uma rede de entregas por drones tende a crescer gradualmente, tanto pela entrada de novos clientes quanto pela instalação progressiva de estações externas. Nesse contexto, uma decisão relevante não é apenas qual rota construir com a infraestrutura completa, mas quanto desempenho pode ser preservado antes que toda a infraestrutura esteja disponível.
+Apesar desses avanços, a maior parte da literatura considera um único horizonte de decisão e assume que a infraestrutura de recarga está fixa e disponível desde o início. Essa hipótese é forte para operações em expansão: uma rede de entregas por drones tende a crescer gradualmente, tanto pela entrada de novos clientes quanto pela disponibilização progressiva de estações externas. Nesse contexto, uma decisão relevante não é apenas qual rota construir com a infraestrutura completa, mas quanto desempenho pode ser preservado antes que toda a infraestrutura esteja disponível.
 
-Este artigo investiga essa questão por meio do PRMD-ER, uma extensão multi-período \textit{offline} do E-VRPTW reinterpretada para drones. Em cada período, há um conjunto de clientes ativos $C_t$ e um conjunto de estações externas disponíveis $F_t$; ambos crescem ao longo do horizonte. Três políticas de estações são comparadas: apenas depósito, ativação faseada e disponibilidade completa. As janelas de tempo e a bateria são tratadas como restrições flexíveis, com penalidades explícitas para atraso e inviabilidade energética.
+Este artigo investiga essa questão por meio do PRMD-ER, uma extensão multi-período \textit{offline} do E-VRPTW reinterpretada para drones. Em cada período, há um conjunto de clientes ativos $C_t$ e um conjunto de estações externas disponíveis $F_t$; ambos crescem ao longo do horizonte. Três políticas de estações são comparadas: apenas depósito, disponibilidade faseada e disponibilidade completa. As janelas de tempo e a bateria são tratadas como restrições flexíveis, com penalidades explícitas para atraso e inviabilidade energética.
 
 Para resolver o problema, é proposta a MP-EAVNS, uma Busca em Vizinhança Variável sensível à energia. O método combina construção randomizada, cinco vizinhanças de clientes, reparo energético por visitas a estações existentes e inicialização herdada entre períodos. A escolha por uma família VNS/ALNS é coerente com a literatura de roteamento com múltiplas restrições, na qual operadores de vizinhança, destruição-reconstrução e reparo são amplamente usados para lidar com soluções parcialmente inviáveis \cite{ropke2006adaptive,mladenovic1997variable,cai2022variable,zhou2024memetic}.
 
-A contribuição do trabalho é tripla: formalizar um cenário multi-período de entregas por drones com ativação gradual de estações, avaliar o impacto dessa ativação sobre a viabilidade energética e comparar a MP-EAVNS com heurísticas construtivas, GRASP e uma ALNS adaptada. Os resultados separam objetivo penalizado, viabilidade energética e distância em soluções viáveis, de modo que o efeito da infraestrutura possa ser analisado sem confundir penalidade por inviabilidade com qualidade de roteamento.
+A contribuição do trabalho é tripla: formalizar um cenário multi-período de entregas por drones com disponibilização gradual de estações, avaliar o impacto dessa disponibilização sobre a viabilidade energética e comparar a MP-EAVNS com heurísticas construtivas, GRASP e uma ALNS adaptada. Os resultados separam objetivo penalizado, viabilidade energética e distância em soluções viáveis, de modo que o efeito da infraestrutura possa ser analisado sem confundir penalidade por inviabilidade com qualidade de roteamento.
 
-O restante do artigo está organizado da seguinte forma. A Seção~\ref{sec:relacionados} posiciona o PRMD-ER frente à literatura de roteamento com janelas de tempo, metaheurísticas, roteamento verde e drones com recarga. A Seção~\ref{sec:metodologia} formaliza o problema, descreve as políticas de ativação de estações e detalha a MP-EAVNS. A Seção~\ref{sec:resultados} apresenta os experimentos, separando viabilidade, qualidade das rotas e custo computacional. Por fim, a Seção~\ref{sec:conclusao} resume os principais achados e limitações.
+O restante do artigo está organizado da seguinte forma. A Seção~\ref{sec:relacionados} posiciona o PRMD-ER frente à literatura de roteamento com janelas de tempo, metaheurísticas, roteamento verde e drones com recarga. A Seção~\ref{sec:metodologia} formaliza o problema, descreve as políticas de disponibilidade de estações e detalha a MP-EAVNS. A Seção~\ref{sec:resultados} apresenta os experimentos, separando viabilidade, qualidade das rotas e custo computacional. Por fim, a Seção~\ref{sec:conclusao} resume os principais achados e limitações.
 
 \section{Trabalhos Relacionados} \label{sec:relacionados}
 
@@ -77,13 +76,13 @@ O VRPTW \cite{solomon1987algorithms} introduziu o compromisso entre custo espaci
 
 Sob informação parcial e restrições acopladas, métodos exatos perdem tração rapidamente, o que levou a literatura de roteamento a consolidar metaheurísticas baseadas em vizinhanças e reparo. A ALNS \cite{ropke2006adaptive} adapta a escolha de operadores de destruição e reconstrução conforme o desempenho histórico, enquanto a VNS \cite{mladenovic1997variable} alterna vizinhanças distintas para escapar de ótimos locais. Algoritmos meméticos seguem a mesma lógica híbrida: combinam busca populacional com refinamento local especializado, como mostram propostas recentes para PDP com operadores adaptados à precedência \cite{zhou2024memetic}.
 
-A literatura recente de DPDP, sintetizada na revisão de \cite{cai2023survey}, reforça que decisões sequenciais, informação parcial e múltiplas restrições operacionais exigem métodos capazes de corrigir soluções incompletas ou degradadas ao longo da busca. Nesse contexto, aplicações de VNS a variantes práticas do problema \cite{cai2022variable} e métodos meméticos para PDP indicam que alternar vizinhanças estruturais e aplicar operadores de reparo são mecanismos recorrentes em soluções competitivas. O PRMD-ER adota essa linha, mas desloca o foco para viabilidade energética e ativação gradual de infraestrutura.
+A literatura recente de DPDP, sintetizada na revisão de \cite{cai2023survey}, reforça que decisões sequenciais, informação parcial e múltiplas restrições operacionais exigem métodos capazes de corrigir soluções incompletas ou degradadas ao longo da busca. Nesse contexto, aplicações de VNS a variantes práticas do problema \cite{cai2022variable} indicam que alternar vizinhanças estruturais e aplicar operadores de reparo são mecanismos recorrentes em soluções competitivas. O PRMD-ER adota essa linha, mas desloca o foco para viabilidade energética e disponibilização gradual de infraestrutura.
 
 \subsection{Roteamento Verde, Veículos Elétricos e Recarga}
 
 A viabilidade energética, antes ausente do VRP clássico, foi gradualmente incorporada pela literatura de roteamento verde. Revisões do \textit{Green VRP} \cite{asghari2021green} e classificações de variantes ambientalmente amigáveis \cite{ghorbani2020environmentally} cobrem veículos elétricos, recarga e troca de baterias; análises de problemas com veículos elétricos e autônomos \cite{stamadianos2023routing} destacam recarga e infraestrutura como decisões de primeira classe.
 
-Dentro dessa linha, o E-VRPTW \cite{schneider2014evrptw} estabeleceu a referência para roteamento elétrico com janelas de tempo: veículos com bateria limitada atendem clientes e podem visitar estações intermediárias para recarga. O conjunto de instâncias associado \cite{goeke2019evrptwdata} deriva das instâncias de Solomon e inclui clientes, depósito, estações e parâmetros energéticos. O PRMD-ER usa essa base e acrescenta três elementos: períodos com clientes ativos crescentes $C_t$, políticas de ativação de estações $F_t$ e uma avaliação penalizada que separa objetivo, viabilidade energética e distância em soluções viáveis.
+Dentro dessa linha, o E-VRPTW \cite{schneider2014evrptw} estabeleceu a referência para roteamento elétrico com janelas de tempo: veículos com bateria limitada atendem clientes e podem visitar estações intermediárias para recarga. O conjunto de instâncias associado \cite{goeke2019evrptwdata} deriva das instâncias de Solomon e inclui clientes, depósito, estações e parâmetros energéticos. O PRMD-ER usa essa base e acrescenta três elementos: períodos com clientes ativos crescentes $C_t$, políticas de disponibilidade de estações $F_t$ e uma avaliação penalizada que separa objetivo, viabilidade energética e distância em soluções viáveis.
 
 \subsection{Roteamento de Drones e Estações de Recarga}
 
@@ -110,7 +109,7 @@ Ref. & Problema e instâncias & Método e resultado & Relação com este artigo 
 \cite{coelho2017green} & Roteamento verde multiobjetivo de UAVs com autonomia e estações. & MILP resolvido por matheurística; fronteira de Pareto. & Mostra relevância multiobjetivo no domínio. \\
 \cite{ribeiro2020uav} & Localização-roteamento de UAVs para inspeção industrial. & Formulação MILP em cenário de mineração. & Reforça a criticidade da localização de estações. \\
 \cite{vichitkunakorn2024stocktaking} & Drones para inventário em armazéns com localização de estações. & ALNS com codificação específica. & Acopla rota e estações em horizonte único. \\
-Este artigo & PRMD-ER sobre E-VRPTW adaptado; 92 instâncias, 4 períodos, 3 políticas. & MP-EAVNS multi-período com herança e reparo energético. & Crescimento multi-período e políticas de ativação de estações. \\
+Este artigo & PRMD-ER sobre E-VRPTW adaptado; 92 instâncias, 4 períodos, 3 políticas. & MP-EAVNS multi-período com herança e reparo energético. & Crescimento multi-período e políticas de disponibilidade de estações. \\
 \bottomrule
 \end{tabular}%
 }
@@ -118,7 +117,7 @@ Este artigo & PRMD-ER sobre E-VRPTW adaptado; 92 instâncias, 4 períodos, 3 pol
 
 \section{Metodologia} \label{sec:metodologia}
 
-Esta seção apresenta a formulação do PRMD-ER, as instâncias utilizadas, os algoritmos comparados e o método principal MP-EAVNS. São descritos a ativação de clientes, a ativação de estações, a construção de rotas, o reparo energético e a herança entre períodos.
+Esta seção apresenta a formulação do PRMD-ER, as instâncias utilizadas, os algoritmos comparados e o método principal MP-EAVNS. São descritos a entrada de clientes, a disponibilidade de estações, a construção de rotas, o reparo energético e a herança entre períodos.
 
 \subsection{Formulação do Problema} \label{subsec:formulacao}
 
@@ -128,7 +127,7 @@ O horizonte é dividido em períodos $T = \{1, \ldots, H\}$. Em cada período $t
 
 \begin{itemize}
 \item Depósito: $F_t = \emptyset$ em todo período, isto é, não há estações externas disponíveis e a recarga intermediária só pode ocorrer no próprio depósito;
-\item Faseada: as estações externas são ativadas em $H$ parcelas, sendo $|F_t| = \lceil |F| \cdot t/H \rceil$ a cardinalidade do conjunto externo ativo no período $t$. As estações concretas escolhidas para entrar em $F_t \setminus F_{t-1}$ são selecionadas por uma regra gulosa que minimiza, a cada estação adicionada, a soma das distâncias dos clientes em $C_t$ à estação ativa mais próxima --- isto é, cada nova estação é instalada onde mais aproxima a infraestrutura dos clientes já atendidos no período. Esse acoplamento entre crescimento de demanda e expansão de infraestrutura é uma característica do PRMD-ER que não aparece em variantes E-VRPTW puras;
+\item Faseada: as estações externas são disponibilizadas em $H$ parcelas, sendo $|F_t| = \lceil |F| \cdot t/H \rceil$ a cardinalidade do conjunto externo disponível no período $t$. As estações concretas escolhidas para entrar em $F_t \setminus F_{t-1}$ são selecionadas por uma regra gulosa que minimiza, a cada estação adicionada, a soma das distâncias dos clientes em $C_t$ à estação disponível mais próxima --- isto é, cada nova estação é disponibilizada onde mais aproxima a infraestrutura dos clientes já atendidos no período. Esse acoplamento entre crescimento de demanda e expansão de infraestrutura é uma característica do PRMD-ER que não aparece em variantes E-VRPTW puras;
 \item Completa: $F_t = F$ em todo período, ou seja, toda a infraestrutura está disponível desde $t = 1$.
 \end{itemize}
 
@@ -219,8 +218,8 @@ Foram implementados nove algoritmos: três heurísticas construtivas, um método
 
 Após qualquer construção, um módulo de reparo energético percorre cada rota da esquerda para a direita simulando o nível de bateria $e(R, \cdot)$ conforme a Equação~\eqref{eq:autonomia}. Sempre que um arco $(i, j)$ faria a bateria atingir um valor negativo --- isto é, quando violaria a condição $e(R,j)\geq 0$ ---, o módulo procura uma estação já ativa $f \in F_t$ para usar como parada intermediária entre $i$ e $j$, segundo dois critérios cumulativos:
 \begin{enumerate}
-    \item Viabilidade: $f$ deve ser alcançável a partir de $i$ com a bateria corrente, isto é, $e(R, i) \geq d_{if}$, e o arco seguinte $f \to j$ deve ser viável após a recarga em $f$, isto é, $B \geq d_{fj}$;
-    \item Custo mínimo: entre todas as estações que satisfazem a viabilidade, é escolhida aquela que minimiza o aumento de distância $\Delta_{ij}(f) = d_{if} + d_{fj} - d_{ij}$.
+\item Viabilidade: $f$ deve ser alcançável a partir de $i$ com a bateria corrente, isto é, $e(R, i) \geq d_{if}$, e o arco seguinte $f \to j$ deve ser viável após a recarga em $f$, isto é, $B \geq d_{fj}$;
+\item Custo mínimo: entre todas as estações que satisfazem a viabilidade, é escolhida aquela que minimiza o aumento de distância $\Delta_{ij}(f) = d_{if} + d_{fj} - d_{ij}$.
 \end{enumerate}
 Se nenhuma estação em $F_t$ satisfizer simultaneamente os dois critérios, o arco permanece inviável e contribui com uma unidade em $I(x_t)$. Após a parada intermediária (ou após a contabilização da violação), o módulo continua a simulação a partir do próximo vértice da rota; a bateria, se houve recarga em $f$, é reiniciada em $B$. O módulo modela a decisão operacional de desviar para a base de recarga geometricamente mais próxima cujo voo de ida ainda cabe na bateria corrente e cujo voo de saída até o próximo cliente cabe em uma bateria cheia.
 
@@ -364,7 +363,7 @@ tile/.style={inner sep=2pt}
 \label{fig:neighborhoods}
 \end{figure}
 
-Quando nenhuma vizinhança melhora a solução corrente, uma perturbação remove e reinsere uma fração dos clientes e a busca continua a partir da melhor solução conhecida. O processo termina após $k_{\max}=80$ iterações sem melhoria. A Figura~\ref{fig:mpeavns} resume esse fluxo.
+Quando nenhuma vizinhança melhora a solução corrente, uma perturbação remove e reinsere uma fração dos clientes e a busca continua a partir da melhor solução conhecida. O processo executa até $k_{\max}=80$ iterações principais; uma perturbação é forçada quando a busca local estagna por quatro iterações consecutivas. A Figura~\ref{fig:mpeavns} resume esse fluxo.
 
 \begin{figure}[ht]
 \centering
@@ -381,7 +380,7 @@ arrow/.style={-{Latex[length=2.4mm]}, line width=0.8pt, draw=neutral},
 back/.style={-{Latex[length=2.4mm]}, line width=0.7pt, dashed, draw=neutral}
 ]
 
-\node[main]   (seed) {Solução inicial};
+\node[main] (seed) {Solução inicial};
 \node[main, right=of seed] (local) {Busca em\\$\mathcal{N}_1$--$\mathcal{N}_5$};
 \node[repair, right=of local] (rep) {Reparo\\energético};
 \node[main, right=of rep] (eval) {Aceita se\\melhorar};
@@ -393,7 +392,7 @@ back/.style={-{Latex[length=2.4mm]}, line width=0.7pt, dashed, draw=neutral}
 \draw[arrow] (rep) -- (eval);
 \draw[arrow] (eval) -- (best);
 \draw[back] (eval.south) |- (shake.east);
-\draw[back] (shake.west) -| node[pos=0.28, below, font=\tiny, align=center] {até $k_{\max}$\\sem melhoria} (local.south);
+\draw[back] (shake.west) -| node[pos=0.28, below, font=\tiny, align=center] {até $k_{\max}$\\iterações} (local.south);
 
 \end{tikzpicture}
 }
@@ -424,15 +423,15 @@ A Tabela~\ref{tab:algoritmos} apresenta as métricas médias agregadas sobre as 
 \toprule
 Algoritmo & Objetivo & Distância & Atraso & Rotas & Inviáveis \\
 \midrule
-EDD       & 8.110.288 & 1.779,5 &   179,5 & 16,42 & 8,11 \\
-Sweep     & 4.293.766 & 1.303,2 & 1.180,3 & 16,74 & 4,28 \\
-Nearest   & 3.657.117 & 1.270,6 & 1.490,9 & 14,45 & 3,64 \\
-GRASP     & 2.525.490 & 1.368,2 &   908,8 & 14,46 & 2,51 \\
-ALNS      & 1.491.736 & 1.150,6 &     2,3 & 14,32 & 1,49 \\
-MP-EAVNS (principal) & 1.617.556 & 1.071,0 &     1,7 & 14,31 & 1,62 \\
-\quad variante sem 2-opt aux.  & 1.630.227 & 1.071,9 & 0,5 & 14,32 & 1,63 \\
+EDD & 8.110.288 & 1.779,5 & 179,5 & 16,42 & 8,11 \\
+Sweep & 4.293.766 & 1.303,2 & 1.180,3 & 16,74 & 4,28 \\
+Nearest & 3.657.117 & 1.270,6 & 1.490,9 & 14,45 & 3,64 \\
+GRASP & 2.525.490 & 1.368,2 & 908,8 & 14,46 & 2,51 \\
+ALNS & 1.491.736 & 1.150,6 & 2,3 & 14,32 & 1,49 \\
+MP-EAVNS (principal) & 1.617.556 & 1.071,0 & 1,7 & 14,31 & 1,62 \\
+\quad variante sem 2-opt aux. & 1.630.227 & 1.071,9 & 0,5 & 14,32 & 1,63 \\
 \quad variante sem perturb. & 1.632.965 & 1.076,4 & 1,6 & 14,38 & 1,63 \\
-\quad variante sem herança  & 1.936.032 & 1.174,6 & 45,8 & 14,29 & 1,93 \\
+\quad variante sem herança & 1.936.032 & 1.174,6 & 45,8 & 14,29 & 1,93 \\
 \bottomrule
 \end{tabular}
 \vspace{1mm}
@@ -452,7 +451,7 @@ Quando a agregação é restrita às políticas com infraestrutura externa (Fase
 
 \subsection{Efeito da Política de Estações}
 
-A Tabela~\ref{tab:estacoes} compara as três políticas de estações agregando todos os algoritmos. A coluna Recargas indica o número médio de visitas a pontos de recarga, distinto do número de rotas penalizado na Equação~\eqref{eq:objetivo}. A política Completa funciona como limite superior de infraestrutura, pois todas as estações externas estão disponíveis desde o primeiro período. A política Faseada, por sua vez, representa a implantação gradual: ela fica apenas 2,3\,\% acima da Completa no objetivo penalizado e 89,5\,\% abaixo da política Depósito, indicando que a ativação progressiva recupera quase todo o benefício energético da infraestrutura completa. As distâncias médias de Faseada e Completa são praticamente iguais (1.253,9 contra 1.252,3, diferença de 0,1\,\%); a degradação da Faseada aparece mais no atraso (431,9 contra 427,0, diferença de 1,1\,\%) e na pequena inviabilidade residual.
+A Tabela~\ref{tab:estacoes} compara as três políticas de estações agregando todos os algoritmos. A coluna Recargas indica o número médio de visitas a pontos de recarga, distinto do número de rotas penalizado na Equação~\eqref{eq:objetivo}. A política Completa funciona como limite superior de infraestrutura, pois todas as estações externas estão disponíveis desde o primeiro período. A política Faseada, por sua vez, representa a disponibilização gradual: ela fica apenas 2,3\,\% acima da Completa no objetivo penalizado e 89,5\,\% abaixo da política Depósito, indicando que a disponibilização progressiva recupera quase todo o benefício energético da infraestrutura completa. As distâncias médias de Faseada e Completa são praticamente iguais (1.253,9 contra 1.252,3, diferença de 0,1\,\%); a degradação da Faseada aparece mais no atraso (431,9 contra 427,0, diferença de 1,1\,\%) e na pequena inviabilidade residual.
 
 \begin{table}[ht]
 \centering
@@ -466,8 +465,8 @@ A Tabela~\ref{tab:estacoes} compara as três políticas de estações agregando 
 Política & Objetivo & Distância & Atraso & Recargas & Inviáveis \\
 \midrule
 Depósito & 7.423.220 & 1.249,2 & 411,6 & 1,07 & 7,42 \\
-Faseada  &   779.701 & 1.253,9 & 431,9 & 7,73 & 0,77 \\
-Completa &   762.138 & 1.252,3 & 427,0 & 7,76 & 0,76 \\
+Faseada & 779.701 & 1.253,9 & 431,9 & 7,73 & 0,77 \\
+Completa & 762.138 & 1.252,3 & 427,0 & 7,76 & 0,76 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -485,14 +484,14 @@ A média agregada esconde uma interação relevante entre algoritmo e política.
 \toprule
 Algoritmo & \multicolumn{2}{c}{Depósito} & \multicolumn{2}{c}{Faseada} & \multicolumn{2}{c}{Completa} \\
 \cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(l){6-7}
- & Viab. & Inv. & Viab. & Inv. & Viab. & Inv. \\
+& Viab. & Inv. & Viab. & Inv. & Viab. & Inv. \\
 \midrule
-EDD       &  7,9 & 16,42 & 27,7 & 3,95 & 28,5 & 3,94 \\
-Sweep     &  9,2 &  9,55 & 50,3 & 1,65 & 51,9 & 1,63 \\
-Nearest   &  7,9 &  8,69 & 49,7 & 1,13 & 51,6 & 1,10 \\
-GRASP     & 14,4 &  7,33 & 89,1 & 0,12 & 92,1 & 0,08 \\
-ALNS      & 17,9 &  4,45 & 98,6 & 0,01 & \textbf{100,0} & \textbf{0,00} \\
-MP-EAVNS  & 17,9 &  4,83 & 98,6 & 0,01 & \textbf{100,0} & \textbf{0,00} \\
+EDD & 7,9 & 16,42 & 27,7 & 3,95 & 28,5 & 3,94 \\
+Sweep & 9,2 & 9,55 & 50,3 & 1,65 & 51,9 & 1,63 \\
+Nearest & 7,9 & 8,69 & 49,7 & 1,13 & 51,6 & 1,10 \\
+GRASP & 14,4 & 7,33 & 89,1 & 0,12 & 92,1 & 0,08 \\
+ALNS & 17,9 & 4,45 & 98,6 & 0,01 & \textbf{100,0} & \textbf{0,00} \\
+MP-EAVNS & 17,9 & 4,83 & 98,6 & 0,01 & \textbf{100,0} & \textbf{0,00} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -510,12 +509,12 @@ Por outro lado, restringindo a comparação a soluções viáveis, a Tabela~\ref
 \toprule
 Algoritmo & Depósito & Faseada & Completa \\
 \midrule
-EDD       & 137,0 &   370,1 &   366,0 \\
-Sweep     & 165,0 &   975,3 &   953,6 \\
-Nearest   & 145,7 &   725,9 &   707,6 \\
-GRASP     & 191,4 & 1.238,6 & 1.185,9 \\
-ALNS      & 188,9 & 1.158,9 & 1.148,9 \\
-MP-EAVNS  & 188,4 & 1.087,5 & \textbf{1.072,0} \\
+EDD & 137,0 & 370,1 & 366,0 \\
+Sweep & 165,0 & 975,3 & 953,6 \\
+Nearest & 145,7 & 725,9 & 707,6 \\
+GRASP & 191,4 & 1.238,6 & 1.185,9 \\
+ALNS & 188,9 & 1.158,9 & 1.148,9 \\
+MP-EAVNS & 188,4 & 1.087,5 & \textbf{1.072,0} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -551,9 +550,9 @@ Em síntese, ALNS e MP-EAVNS apresentam a mesma garantia empírica de viabilidad
 \toprule
 Classe & Casos & Vitórias MP & Empates & Dif. média \\
 \midrule
-Pequenas & 144 & 17,4\,\% & 73,6\,\% &   1,5 \\
-Grandes  & 224 & 88,8\,\% &  0,0\,\% & 125,4 \\
-Total    & 368 & 60,9\,\% & 28,8\,\% &  76,9 \\
+Pequenas & 144 & 17,4\,\% & 73,6\,\% & 1,5 \\
+Grandes & 224 & 88,8\,\% & 0,0\,\% & 125,4 \\
+Total & 368 & 60,9\,\% & 28,8\,\% & 76,9 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -565,7 +564,7 @@ O alto número de empates nas instâncias pequenas é esperado: com poucos clien
 As três variantes reduzidas definidas na Seção~\ref{subsec:algoritmos} isolam o papel do 2-opt auxiliar, da perturbação e da herança entre períodos. A interpretação dos resultados é a seguinte:
 
 \begin{itemize}
-\item Remover o 2-opt auxiliar tem efeito pequeno sobre o objetivo (+0,7\,\%) e nulo sobre a viabilidade, porque o reparo energético embutido em \texttt{evaluate} continua ativo e o movimento $\mathcal{N}_1$ já cobre a maior parte das melhorias de 2-opt durante a busca principal. O atraso médio dessa variante é menor (0,5 contra 1,7), mas ambos os valores são residuais frente ao objetivo agregado; a diferença indica apenas uma troca local entre distância, rotas e atraso, não uma melhora global da variante.
+\item Remover o 2-opt auxiliar tem efeito pequeno sobre o objetivo (+0,7\,\%) e nulo sobre a viabilidade, porque o reparo energético continua ativo durante a avaliação e o movimento $\mathcal{N}_1$ já cobre a maior parte das melhorias de 2-opt durante a busca principal. O atraso médio dessa variante é menor (0,5 contra 1,7), mas ambos os valores são residuais frente ao objetivo agregado; a diferença indica apenas uma troca local entre distância, rotas e atraso, não uma melhora global da variante.
 \item Remover a perturbação também tem efeito pequeno (+0,9\,\% no objetivo), sugerindo que a perturbação aleatória contribui pouco para os ganhos finais quando a busca local em $\mathcal{N}_1$--$\mathcal{N}_5$ já encontrou todas as melhorias possíveis.
 \item Remover a herança entre períodos é o componente que mais impacta o desempenho: o objetivo médio cresce 19,7\,\%, a distância média sobe de 1.071 para 1.175 unidades e o atraso médio sobe de 1,7 para 45,8 unidades. Isso confirma que a inicialização herdada carrega a maior fração do ganho, em particular nos períodos finais, quando rotas estáveis reduzem o esforço para inserir novos clientes.
 \end{itemize}
@@ -587,9 +586,9 @@ Sob a política Faseada, aumentar a autonomia do drone reduz rapidamente a penal
 \toprule
 $B$ & Viabilidade & Inviáveis médios & Distância & Atraso & Recargas \\
 \midrule
-60  &  82,6\,\% & 0,22 & 1.143,7 & 8,9 & 12,26 \\
-80  &  98,6\,\% & 0,01 & 1.075,6 & 1,7 &  6,09 \\
-100 & 100,0\,\% & 0,00 & 1.054,4 & 0,0 &  1,74 \\
+60 & 82,6\,\% & 0,22 & 1.143,7 & 8,9 & 12,26 \\
+80 & 98,6\,\% & 0,01 & 1.075,6 & 1,7 & 6,09 \\
+100 & 100,0\,\% & 0,00 & 1.054,4 & 0,0 & 1,74 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -609,11 +608,11 @@ A Figura~\ref{fig:runtime} cruza tempo de execução e qualidade da solução. A
 
 \section{Conclusão} \label{sec:conclusao}
 
-Este artigo apresentou o PRMD-ER, uma extensão multi-período do problema E-VRPTW para roteamento de drones com estações de recarga ativadas gradualmente. A MP-EAVNS foi avaliada em uma base experimental formada pelas 92 instâncias do \textit{benchmark} E-VRPTW, totalizando 9.936 execuções com heurísticas construtivas, GRASP, uma ALNS adaptada e três variantes reduzidas do próprio método. A MP-EAVNS reduziu o objetivo penalizado médio em 36,0\,\% frente ao GRASP, atingiu 100\,\% de viabilidade sob a política Completa e produziu rotas viáveis 6,7\,\% mais curtas que a ALNS nesse regime de viabilidade total. A variante sem herança teve o maior impacto negativo, o que confirma a importância de usar a solução do período anterior como ponto de partida.
+Este artigo apresentou o PRMD-ER, uma extensão multi-período do problema E-VRPTW para roteamento de drones com estações de recarga disponibilizadas gradualmente. A MP-EAVNS foi avaliada em uma base experimental formada pelas 92 instâncias do \textit{benchmark} E-VRPTW, totalizando 9.936 execuções com heurísticas construtivas, GRASP, uma ALNS adaptada e três variantes reduzidas do próprio método. A MP-EAVNS reduziu o objetivo penalizado médio em 36,0\,\% frente ao GRASP, atingiu 100\,\% de viabilidade sob a política Completa e produziu rotas viáveis 6,7\,\% mais curtas que a ALNS nesse regime de viabilidade total. A variante sem herança teve o maior impacto negativo, o que confirma a importância de usar a solução do período anterior como ponto de partida.
 
-O resultado central é que a ativação gradual de estações preserva 98,6\,\% da viabilidade obtida com implantação completa e fica a apenas 1,4\,\% de distância da política Completa em soluções viáveis. Isso indica que a operação não precisa esperar pela disponibilidade total da infraestrutura para se aproximar do regime de melhor desempenho.
+O resultado central é que a disponibilização gradual de estações preserva 98,6\,\% da viabilidade obtida com disponibilidade completa e fica a apenas 1,4\,\% de distância da política Completa em soluções viáveis. Isso indica que a operação não precisa esperar pela disponibilidade total da infraestrutura para se aproximar do regime de melhor desempenho.
 
-As principais limitações são o uso de um único depósito por instância, o modelo energético simplificado e a comparação com uma ALNS adaptada neste trabalho, sem calibração externa exaustiva. Trabalhos futuros podem tratar a ativação de estações como variável de decisão, incorporar custos de transição entre períodos, testar múltiplos depósitos e detalhar o desempenho por classe geométrica de instância (C/R/RC de Solomon).
+As principais limitações estão no modelo físico adotado para os drones. O consumo energético foi tratado como proporcional apenas à distância euclidiana, sem considerar carga transportada, vento, altitude, velocidade, fases de pouso e decolagem ou degradação da bateria. Essa simplificação preserva a comparabilidade com o \textit{benchmark} E-VRPTW, mas limita a leitura operacional dos resultados. Trabalhos futuros podem incorporar modelos energéticos mais realistas, estimar tempos de recarga dependentes da bateria e tratar a disponibilização de estações como variável de decisão do planejamento.
 
 \bibliographystyle{sbc}
 \bibliography{refs}

@@ -53,6 +53,11 @@ PALETTE = {
     "phased": "#34d399",
     "all": "#047857",
 }
+SUMMARY_POLICY_PALETTE = {
+    "depot": "#cbd5e1",
+    "phased": "#0e7490",
+    "all": "#b45309",
+}
 
 # Secondary accent for dual-axis or callouts.
 ACCENT = "#b45309"
@@ -212,7 +217,7 @@ def algorithm_summary_panel(results: list[dict[str, str]], output: Path) -> None
             if row["algorithm"] == algorithm and row["station_policy"] == policy
         ]
 
-    fig, (ax_viab, ax_dist) = plt.subplots(1, 2, figsize=(6.7, 2.65), sharey=True)
+    fig, (ax_viab, ax_dist) = plt.subplots(1, 2, figsize=(6.9, 2.75), sharey=True)
 
     bar_h = 0.22
     offsets = [-bar_h, 0, bar_h]
@@ -225,20 +230,21 @@ def algorithm_summary_panel(results: list[dict[str, str]], output: Path) -> None
             [pos + offset for pos in positions],
             values,
             height=bar_h,
-            color=PALETTE[policy],
+            color=SUMMARY_POLICY_PALETTE[policy],
             edgecolor=NEUTRAL_TEXT,
             linewidth=0.45,
             label=POLICY_LABELS[policy],
         )
         for bar, value in zip(bars, values):
+            inside = value >= 24
             ax_viab.text(
-                value + 1.4,
+                value - 1.6 if inside else value + 1.4,
                 bar.get_y() + bar.get_height() / 2,
                 br_number(value, 1),
-                ha="left",
+                ha="right" if inside else "left",
                 va="center",
-                fontsize=7.4,
-                color=NEUTRAL_TEXT,
+                fontsize=7.1,
+                color="white" if inside else NEUTRAL_TEXT,
             )
 
     bar_h2 = 0.28
@@ -257,35 +263,35 @@ def algorithm_summary_panel(results: list[dict[str, str]], output: Path) -> None
             [pos + offset for pos in positions],
             values,
             height=bar_h2,
-            color=PALETTE[policy],
+            color=SUMMARY_POLICY_PALETTE[policy],
             edgecolor=NEUTRAL_TEXT,
             linewidth=0.45,
         )
-        xmax = max(values)
         for bar, value in zip(bars, values):
+            inside = value >= 420
             ax_dist.text(
-                value + xmax * 0.015,
+                value - distance_max * 0.018 if inside else value + distance_max * 0.012,
                 bar.get_y() + bar.get_height() / 2,
                 br_number(value, 0),
-                ha="left",
+                ha="right" if inside else "left",
                 va="center",
-                fontsize=7.4,
-                color=NEUTRAL_TEXT,
+                fontsize=7.1,
+                color="white" if inside else NEUTRAL_TEXT,
             )
 
     ax_viab.set_yticks(positions, labels)
     ax_viab.invert_yaxis()
-    ax_viab.set_xlim(0, 108)
-    ax_dist.set_xlim(0, distance_max * 1.18)
+    ax_viab.set_xlim(0, 104)
+    ax_dist.set_xlim(0, distance_max * 1.06)
     ax_viab.set_xlabel("Soluções viáveis (%)")
     ax_dist.set_xlabel("Distância viável média")
     ax_viab.set_title("(a) Viabilidade")
     ax_dist.set_title("(b) Qualidade da rota")
     ax_viab.xaxis.set_major_formatter(FuncFormatter(lambda x, p=0: br_number(x, 0)))
     ax_dist.xaxis.set_major_formatter(FuncFormatter(lambda x, p=0: br_number(x, 0)))
-    ax_viab.legend(frameon=False, ncol=3, loc="lower right", handletextpad=0.35, columnspacing=0.8)
+    ax_viab.legend(frameon=False, ncol=3, loc="lower center", bbox_to_anchor=(0.5, -0.34), handletextpad=0.35, columnspacing=0.8)
     ax_dist.tick_params(axis="y", left=False, labelleft=False)
-    fig.subplots_adjust(wspace=0.16)
+    fig.subplots_adjust(wspace=0.16, bottom=0.26)
     fig.tight_layout()
     fig.savefig(output)
     plt.close(fig)
