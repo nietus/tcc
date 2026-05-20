@@ -1,4 +1,4 @@
-# Comparação com a literatura
+﻿# Comparação com a literatura
 
 ## Como comparar corretamente
 
@@ -77,7 +77,7 @@ Método: MILP.
 
 Uso no artigo:
 
-Mostra que localização de estações para UAVs é relevante em aplicação industrial brasileira. Ajuda a defender a importância prática da política faseada de estações.
+Mostra que localização de estações para UAVs é relevante em aplicação industrial brasileira. Ajuda a defender a importância prática da política gradual de estações.
 
 ### Vichitkunakorn et al.
 
@@ -95,7 +95,7 @@ O resultado atual é bom para a fase do TCC porque:
 
 - MP-EAVNS supera GRASP em 16,0%;
 - MP-EAVNS supera heurísticas construtivas em mais de 70%;
-- a política faseada fica apenas 12,4% acima da disponibilidade completa;
+- a política gradual fica apenas 12,4% acima da disponibilidade completa;
 - a sensibilidade de autonomia 60/80/100 mostra comportamento operacional coerente;
 - o método pertence à família VNS/ALNS, que é dominante nos trabalhos mais próximos.
 
@@ -104,3 +104,4 @@ O ponto que ainda precisa ser fortalecido:
 - reproduzir uma versão E-VRPTW original, sem adaptação para drones, para medir gap contra Schneider;
 - ampliar para instâncias de 100 clientes;
 - implementar uma ALNS completa como comparação direta com Shi e Vichitkunakorn.
+
