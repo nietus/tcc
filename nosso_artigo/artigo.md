@@ -480,7 +480,7 @@ A ALNS adaptada (Seção~\ref{subsec:algoritmos}) é a referência natural para 
 \item Distância em soluções viáveis. Restringindo a $I(x_t)=0$, a MP-EAVNS é 6,7\,\% melhor que a ALNS sob Completa (1.072 vs.\ 1.149) e 6,2\,\% melhor sob Gradual (Tabela~\ref{tab:viavel-distancia}) --- o regime operacional de interesse.
 \end{itemize}
 
-\paragraph{Robustez por classe de instância.} A Tabela~\ref{tab:robustez} resume a comparação pareada sob Completa, em execuções viáveis. A vantagem média da MP-EAVNS é de 76,9 unidades de distância (IC 95\,\%: $[65{,}4,\,88{,}4]$). O ganho não é uniforme: nas instâncias pequenas há empate técnico; nas grandes, a MP-EAVNS vence em 88,8\,\% dos pares.
+A Tabela~\ref{tab:robustez} resume a comparação pareada sob Completa, em execuções viáveis. A vantagem média da MP-EAVNS é de 76,9 unidades de distância (IC 95\,\%: $[65{,}4,\,88{,}4]$). O ganho não é uniforme: nas instâncias pequenas há empate técnico; nas grandes, a MP-EAVNS vence em 88,8\,\% dos pares.
 
 \begin{table}[ht]
 \centering
