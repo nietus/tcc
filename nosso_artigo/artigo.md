@@ -63,13 +63,15 @@ Para resolver o problema, é proposta a MP-EAVNS (\textit{Multi-Period Energy-Aw
 
 A contribuição do trabalho é tripla: formalizar um cenário multi-período de entregas por drones com disponibilização gradual de estações, avaliar seu impacto sobre a viabilidade energética e comparar a MP-EAVNS com heurísticas construtivas e metaheurísticas de referência. Os resultados separam objetivo penalizado, viabilidade energética e distância em soluções viáveis, de modo que o efeito da infraestrutura possa ser analisado.
 
+O restante do artigo está organizado como segue. A Seção~\ref{sec:relacionados} posiciona o PRMD-ER na literatura; a Seção~\ref{sec:metodologia} formaliza o problema e detalha a MP-EAVNS; a Seção~\ref{sec:resultados} apresenta os experimentos; e a Seção~\ref{sec:conclusao} resume os achados e limitações.
+
 \section{Trabalhos Relacionados} \label{sec:relacionados}
 
 O VRPTW \cite{solomon1987algorithms} é a base clássica para rotas com compromisso entre distância e atendimento dentro de janelas de tempo. O E-VRPTW adotado neste trabalho preserva essa estrutura e acrescenta autonomia limitada e estações de recarga. O PRMD-ER parte dessa base e introduz uma dimensão multi-período, na qual os conjuntos de clientes ativos $C_t$ e de estações disponíveis $F_t$ crescem ao longo do horizonte. Assim, mantém-se a estrutura clássica de atendimento com janelas de tempo, mas a principal dificuldade passa a ser a interação entre crescimento da demanda e disponibilidade energética.
 
-Sob informação parcial e restrições acopladas, métodos exatos perdem tração rapidamente, o que levou a literatura de roteamento a consolidar metaheurísticas baseadas em vizinhanças e reparo. A ALNS \cite{ropke2006adaptive} adapta a escolha de operadores de destruição e reconstrução conforme o desempenho histórico, enquanto a VNS \cite{mladenovic1997variable} alterna vizinhanças distintas para escapar de ótimos locais. Algoritmos meméticos seguem a mesma lógica híbrida: combinam busca populacional com refinamento local especializado, como mostram propostas recentes para PDP com operadores adaptados à precedência \cite{zhou2024memetic}.
+Sob informação parcial e restrições acopladas, métodos exatos perdem tração rapidamente, o que levou a literatura de roteamento a consolidar metaheurísticas baseadas em vizinhanças e reparo. A ALNS (\textit{Adaptive Large Neighborhood Search}) \cite{ropke2006adaptive} adapta a escolha de operadores de destruição e reconstrução conforme o desempenho histórico, enquanto a VNS \cite{mladenovic1997variable} alterna vizinhanças distintas para escapar de ótimos locais.
 
-A literatura recente de Problemas Dinâmicos de Coleta e Entrega (\textit{Dynamic Pickup and Delivery Problem}, DPDP), sintetizada na revisão de \cite{cai2023survey}, reforça que decisões sequenciais, informação parcial e múltiplas restrições operacionais exigem métodos capazes de corrigir soluções incompletas ou degradadas ao longo da busca. Nesse contexto, aplicações de VNS a variantes práticas do problema \cite{cai2022variable} indicam que alternar vizinhanças estruturais e aplicar operadores de reparo são mecanismos recorrentes em soluções competitivas. O PRMD-ER adota essa linha, mas desloca o foco para viabilidade energética e disponibilização gradual de infraestrutura.
+A literatura recente de Problemas Dinâmicos de Coleta e Entrega (\textit{Dynamic Pickup and Delivery Problem}, DPDP), sintetizada na revisão de \cite{cai2023survey}, reforça que decisões sequenciais, informação parcial e múltiplas restrições operacionais exigem métodos capazes de corrigir soluções incompletas ou degradadas ao longo da busca. Nesse contexto, aplicações recentes ao DPDP --- como VNS para variantes práticas \cite{cai2022variable} e algoritmos meméticos que combinam busca populacional com refinamento local \cite{zhou2024memetic} --- indicam que alternar vizinhanças estruturais e aplicar operadores de reparo são mecanismos recorrentes em soluções competitivas. O PRMD-ER adota essa linha, mas desloca o foco para viabilidade energética e disponibilização gradual de infraestrutura.
 
 A viabilidade energética, antes ausente do VRP clássico, foi gradualmente incorporada pela literatura de roteamento verde. Revisões do \textit{Green VRP} \cite{asghari2021green} e classificações de variantes ambientalmente amigáveis \cite{ghorbani2020environmentally} cobrem veículos elétricos, recarga e troca de baterias; análises de problemas com veículos elétricos e autônomos \cite{stamadianos2023routing} destacam recarga e infraestrutura como decisões de primeira classe.
 
@@ -179,8 +181,8 @@ A comparação inclui nove algoritmos listados a seguir. Todos produzem apenas a
 
 \begin{itemize}
 \item EDD (\textit{Earliest Due Date}): ordena clientes pelo fim da janela $b_i$;
-\item Sweep (varredura): ordena clientes pelo ângulo polar em relação ao depósito;
-\item Nearest (vizinho mais próximo): construção gulosa que escolhe o cliente ainda não atendido mais próximo do último vértice da rota;
+\item Sweep: ordena clientes pelo ângulo polar em relação ao depósito;
+\item Nearest: construção gulosa que escolhe o cliente ainda não atendido mais próximo do último vértice da rota;
 \item GRASP (\textit{Greedy Randomized Adaptive Search Procedure}): construção gulosa randomizada por lista restrita seguida de 2-opt, que inverte trechos de uma rota;
 \item ALNS: inicializada pela melhor entre Nearest, EDD e Sweep após esse refinamento 2-opt; usa três operadores de destruição (remoção aleatória, do pior e por relação espacial), dois de reparo (guloso e \textit{regret-2}), aceitação por \textit{simulated annealing} \cite{kirkpatrick1983optimization} e pesos atualizados pelo esquema $\sigma$ de \cite{ropke2006adaptive};
 \item MP-EAVNS: método principal, descrito a seguir;
@@ -400,7 +402,7 @@ Quando a agregação é restrita às políticas com infraestrutura externa (Grad
 
 \subsection{Efeito da Política de Estações}
 
-A Tabela~\ref{tab:estacoes} compara as três políticas agregando todos os algoritmos (Recargas é o número médio de visitas a estações, distinto do $R(x_t)$ penalizado). A Completa funciona como limite superior; a Gradual fica apenas 2,3\,\% acima dela no objetivo e 89,5\,\% abaixo da política Depósito, recuperando quase todo o benefício energético. Distâncias médias de Gradual e Completa são praticamente iguais (1.253,9 vs.\ 1.252,3, +0,1\,\%); a degradação da Gradual aparece mais no atraso (431,9 vs.\ 427,0, +1,1\,\%) e na pequena inviabilidade residual.
+A Tabela~\ref{tab:estacoes} compara as três políticas agregando todos os algoritmos (Recargas é o número médio de visitas a estações, distinto do $R(x_t)$ penalizado). A Completa funciona como limite inferior do objetivo penalizado; a Gradual fica apenas 2,3\,\% acima dela e 89,5\,\% abaixo da política Depósito, recuperando quase todo o benefício energético. Distâncias médias de Gradual e Completa são praticamente iguais (1.253,9 vs.\ 1.252,3, +0,1\,\%); a degradação da Gradual aparece mais no atraso (431,9 vs.\ 427,0, +1,1\,\%) e na pequena inviabilidade residual.
 
 \begin{table}[ht]
 \centering
@@ -472,7 +474,7 @@ A distância sob Depósito (coluna 1) é menor apenas porque contém os casos ge
 
 \subsection{MP-EAVNS versus ALNS}
 
-A ALNS adaptada (Seção~\ref{subsec:algoritmos}) é a referência natural para janelas de tempo. Ambos os métodos partem da melhor entre Nearest, EDD e Sweep com 2-opt; a MP-EAVNS adiciona construções randomizadas do GRASP ao pool de sementes. Como a MP-EAVNS reduz o objetivo médio em 36,0\,\% frente ao próprio GRASP (Tabela~\ref{tab:algoritmos}), o laço VNS concentra a maior parte do ganho e o GRASP atua como diversificação inicial. A comparação usa a mesma contagem de iterações ($K=80$), embora a ALNS custe 14,44\,s contra 3,73\,s da MP-EAVNS --- ou seja, sob orçamento de iterações, não de CPU. Três aspectos:
+A ALNS adaptada (Seção~\ref{subsec:algoritmos}) é a referência natural para janelas de tempo. Ambos os métodos partem da melhor entre Nearest, EDD e Sweep com 2-opt; a MP-EAVNS adiciona construções randomizadas do GRASP ao pool de sementes. Como a MP-EAVNS reduz o objetivo médio em 36,0\,\% frente ao próprio GRASP (Tabela~\ref{tab:algoritmos}), o laço VNS concentra a maior parte do ganho e o GRASP atua como diversificação inicial. A comparação usa a mesma contagem de iterações ($k_{\max}=80$), embora a ALNS custe 14,44\,s contra 3,73\,s da MP-EAVNS --- ou seja, sob orçamento de iterações, não de CPU. Três aspectos:
 
 \begin{itemize}
 \item Viabilidade. Empate: 100\,\% sob Completa e 98,6\,\% sob Gradual (Tabela~\ref{tab:viabilidade}).
@@ -508,13 +510,13 @@ As três variantes definidas na Seção~\ref{subsec:algoritmos} isolam o papel d
 
 \begin{itemize}
 \item Remover o 2-opt auxiliar tem efeito pequeno (+0,7\,\% no objetivo, nulo na viabilidade), porque o reparo energético continua ativo na avaliação e $\mathcal{N}_1$ cobre a maior parte das melhorias de 2-opt. O atraso médio menor (0,5 contra 1,7) é residual e reflete apenas uma troca local entre distância, rotas e atraso.
-\item Remover a perturbação custa +0,9\,\% no objetivo, sugerindo que ela contribui pouco quando $\mathcal{N}_1$--$\mathcal{N}_5$ já encontrou todas as melhorias acessíveis.
+\item Remover a perturbação custa +0,9\,\% no objetivo, sugerindo que ela contribui pouco quando $\mathcal{N}_1$--$\mathcal{N}_5$ já encontraram todas as melhorias acessíveis.
 \item Remover a herança entre períodos é o componente mais crítico: o objetivo médio cresce 19,7\,\%, a distância de 1.071 para 1.175 e o atraso de 1,7 para 45,8. A inicialização herdada carrega a maior fração do ganho, sobretudo nos períodos finais.
 \end{itemize}
 
 \subsection{Sensibilidade à Bateria}
 
-Sob a política Gradual, aumentar a autonomia reduz rapidamente a inviabilidade: a MP-EAVNS passa de 0,22 trechos inviáveis médios em $B=60$ para 0,01 em $B=80$ e zero em $B=100$ (Tabela~\ref{tab:bateria}). A distância da Tabela~\ref{tab:bateria} é média sobre todas as execuções da MP-EAVNS em cada nível de bateria; por isso, em $B=80$, difere da Tabela~\ref{tab:viavel-distancia}, que condiciona a média às soluções viáveis. Depois dessa transição, a inviabilidade energética deixa de ser o gargalo principal.
+Sob a política Gradual, aumentar a autonomia reduz rapidamente a inviabilidade: a MP-EAVNS passa de 0,22 trechos inviáveis médios em $B=60$ para 0,01 em $B=80$ e zero em $B=100$ (Tabela~\ref{tab:bateria}). A distância da Tabela~\ref{tab:bateria} é média sobre todas as execuções da MP-EAVNS em cada nível de bateria; por isso, em $B=80$, difere da Tabela~\ref{tab:viavel-distancia}, que condiciona a média às soluções viáveis. A partir de $B=80$, a inviabilidade energética deixa de ser o gargalo principal.
 
 \begin{table}[ht]
 \centering
@@ -534,8 +536,6 @@ $B$ & Viabilidade & Inviáveis médios & Distância & Atraso & Recargas \\
 \end{tabular}
 \end{table}
 
-A análise foi executada apenas para a MP-EAVNS; comparar a robustez da ALNS em $B=60$ exigiria uma rodada adicional de experimentos.
-
 \subsection{Custo Computacional}
 
 A Figura~\ref{fig:runtime} cruza tempo de execução e qualidade. A MP-EAVNS custa em média 3,73\,s por solução, contra 0,35\,s do GRASP e 14,44\,s da ALNS: cerca de 10,8 vezes mais lenta que o GRASP (mas com objetivo 36,0\,\% menor) e 3,9 vezes mais rápida que a ALNS, ainda produzindo rotas mais curtas em soluções viáveis (Tabela~\ref{tab:viavel-distancia}). As construtivas puras custam frações de milissegundo, ao preço da viabilidade (Tabela~\ref{tab:viabilidade}).
@@ -551,7 +551,7 @@ A Figura~\ref{fig:runtime} cruza tempo de execução e qualidade. A MP-EAVNS cus
 
 Este artigo apresentou o PRMD-ER, uma extensão multi-período do E-VRPTW para roteamento de drones com estações disponibilizadas gradualmente. A MP-EAVNS foi avaliada nas 92 instâncias do \textit{benchmark} E-VRPTW (9.936 execuções totais), contra heurísticas construtivas, GRASP, ALNS adaptada e três variantes reduzidas. A MP-EAVNS reduziu o objetivo penalizado em 36,0\,\% frente ao GRASP, atingiu 100\,\% de viabilidade sob a política Completa e produziu rotas 6,7\,\% mais curtas que a ALNS nesse regime; o estudo confirma que a herança entre períodos é o componente que mais contribui para o ganho.
 
-O resultado central é que a disponibilização gradual preserva 98,6\,\% da viabilidade da política Completa e apresenta distância viável apenas 1,4\,\% superior à desse regime --- a operação não precisa esperar pela infraestrutura total para se aproximar do melhor desempenho observado. Trabalhos futuros podem incorporar modelos energéticos mais realistas e tratar a disponibilização de estações como variável de decisão do planejamento.
+O resultado central é que a disponibilização gradual atinge 98,6\,\% de viabilidade (frente a 100\,\% da política Completa) e apresenta distância viável apenas 1,4\,\% superior à desse regime --- a operação não precisa esperar pela infraestrutura total para se aproximar do melhor desempenho observado. Trabalhos futuros podem incorporar modelos energéticos mais realistas e tratar a disponibilização de estações como variável de decisão do planejamento.
 
 \bibliographystyle{sbc}
 \bibliography{refs}
