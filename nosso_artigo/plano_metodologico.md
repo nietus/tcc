@@ -1,10 +1,10 @@
-# Plano metodológico do artigo
+﻿# Plano metodológico do artigo
 
 ## Problema
 
 Nome de trabalho: **PRMD-ER - Problema de Roteamento Multi-Período de Drones com Estações de Recarga**.
 
-A ideia central é estudar uma operação de entrega por drones que cresce em períodos. Em cada período entram mais clientes, e a infraestrutura de recarga pode seguir três políticas: apenas depósito, ativação faseada ou todas as estações disponíveis.
+A ideia central é estudar uma operação de entrega por drones que cresce em períodos. Em cada período entram mais clientes, e a infraestrutura de recarga pode seguir três políticas: apenas depósito, ativação gradual ou todas as estações disponíveis.
 
 ## Método principal recomendado
 
@@ -53,7 +53,7 @@ Ordem usada na implementação atual:
 5. **Merge route** para reduzir frota quando houver folga.
 6. **Energy repair** para inserir estações com menor aumento de distância.
 
-O próximo operador estrutural é o **Station activation swap**, que testa outra estação no cenário faseado.
+O próximo operador estrutural é o **Station activation swap**, que testa outra estação no cenário gradual.
 
 ## Estratégia multi-período
 
@@ -67,7 +67,7 @@ Experimentos mínimos para o artigo:
 - 36 instâncias pequenas para comparação completa já executada;
 - instâncias de 100 clientes para escalabilidade;
 - autonomias 60, 80 e 100 já executadas;
-- políticas de estação: depósito, faseada, completa e faseada otimizada;
+- políticas de estação: depósito, gradual, completa e gradual otimizada;
 - algoritmos: EDD, Sweep, Nearest, GRASP e MP-EAVNS já executados; ALNS completa entra como próxima comparação.
 
 ## Gráficos
@@ -83,3 +83,4 @@ Gráficos prioritários:
 - linha do tempo de ativação de estações.
 
 Os gráficos principais já são gerados por `experiments/plot_results.py`.
+

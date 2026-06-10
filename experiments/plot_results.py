@@ -32,7 +32,7 @@ ALGORITHM_LABELS = {
 POLICY_ORDER = ["depot", "phased", "all"]
 POLICY_LABELS = {
     "depot": "Depósito",
-    "phased": "Faseada",
+    "phased": "Gradual",
     "all": "Completa",
 }
 
@@ -217,7 +217,7 @@ def algorithm_summary_panel(results: list[dict[str, str]], output: Path) -> None
             if row["algorithm"] == algorithm and row["station_policy"] == policy
         ]
 
-    fig, (ax_viab, ax_dist) = plt.subplots(1, 2, figsize=(6.9, 2.75), sharey=True)
+    fig, (ax_viab, ax_dist) = plt.subplots(1, 2, figsize=(8.0, 2.75), sharey=True)
 
     bar_h = 0.22
     offsets = [-bar_h, 0, bar_h]
@@ -289,11 +289,19 @@ def algorithm_summary_panel(results: list[dict[str, str]], output: Path) -> None
     ax_dist.set_title("(b) Qualidade da rota")
     ax_viab.xaxis.set_major_formatter(FuncFormatter(lambda x, p=0: br_number(x, 0)))
     ax_dist.xaxis.set_major_formatter(FuncFormatter(lambda x, p=0: br_number(x, 0)))
-    ax_viab.legend(frameon=False, ncol=3, loc="lower center", bbox_to_anchor=(0.5, -0.34), handletextpad=0.35, columnspacing=0.8)
+    handles, leg_labels = ax_viab.get_legend_handles_labels()
     ax_dist.tick_params(axis="y", left=False, labelleft=False)
-    fig.subplots_adjust(wspace=0.16, bottom=0.26)
     fig.tight_layout()
-    fig.savefig(output)
+    fig.legend(
+        handles,
+        leg_labels,
+        frameon=False,
+        loc="center left",
+        bbox_to_anchor=(0.99, 0.5),
+        handletextpad=0.35,
+        borderaxespad=0.0,
+    )
+    fig.savefig(output, bbox_inches="tight")
     plt.close(fig)
 
 
